@@ -1,5 +1,6 @@
 import os
 import json
+import random
 from datetime import datetime, time
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -237,7 +238,7 @@ def main():
     # Планируем ежедневную отправку в 9:00 по указанному часовому поясу
     job_queue.run_daily(
         send_daily_message,
-        time=time(hour=9, minute=0, tzinfo=TIMEZONE),
+        time=time(hour=12, minute=random.randint(0, 59), tzinfo=TIMEZONE),
         name="daily_countdown"
     )
 
