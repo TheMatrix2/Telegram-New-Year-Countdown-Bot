@@ -61,6 +61,7 @@ echo ""
 echo -e "${YELLOW}[4/8] Установка зависимостей...${NC}"
 "$VENV_DIR/bin/pip" install --upgrade pip > /dev/null 2>&1
 "$VENV_DIR/bin/pip" install python-telegram-bot pytz > /dev/null 2>&1
+"$VENV_DIR/bin/pip" install "python-telegram-bot[job-queue]" > /dev/null 2>&1
 
 # Установка python-dotenv если есть .env
 if [ -f "$BOT_DIR/.env" ]; then
