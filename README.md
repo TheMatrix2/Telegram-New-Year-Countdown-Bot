@@ -21,15 +21,14 @@ Telegram-бот, который ежедневно отправляет коли
 ### 1. Клонируйте репозиторий
 
 ```bash
-git clone https://github.com/yourusername/telegram-ny-bot.git
-cd telegram-ny-bot
+git clone https://github.com/yourusername/Telegram-New-Year-Countdown-Bot.git
+cd Telegram-New-Year-Countdown-Bot
 ```
 
 ### 2. Настройте бота
 
 Отредактируйте файл `bot.py` и укажите:
 - `BOT_TOKEN` - токен от @BotFather
-- `CHAT_ID` - ID чата для отправки сообщений
 - `TIMEZONE` - ваш часовой пояс (по умолчанию Moscow)
 
 **Или** создайте файл `.env`:
@@ -40,7 +39,6 @@ nano .env
 Добавьте:
 ```
 BOT_TOKEN=ваш_токен_от_BotFather
-CHAT_ID=ваш_chat_id
 ```
 
 ### 3. Запустите установку
@@ -156,7 +154,7 @@ sudo -u telegram-bot /opt/telegram-bot/venv/bin/python /opt/telegram-bot/bot.py
 
 ### Бот не отправляет сообщения
 
-1. Проверьте правильность `BOT_TOKEN` и `CHAT_ID`
+1. Проверьте правильность `BOT_TOKEN`
 2. Убедитесь, что вы отправили боту команду `/start` в Telegram
 3. Проверьте логи на ошибки
 
