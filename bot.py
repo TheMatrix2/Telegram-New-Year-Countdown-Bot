@@ -101,11 +101,13 @@ def countdown_message():
     """Создает сообщение для отправки"""
     days = days_until_new_year()
     word = word_after_number(days)
+    last_digit = days % 10
+    last_two_digits = days % 100
     if days == 0:
         message = "🎉 С Новым Годом! 🎊"
-    elif days == 1:
+    elif last_digit == 1 and last_two_digits != 11:
         message = f"🎄 Остался всего {days} {word} до Нового года! 🎅"
-    elif days <= 4:
+    elif last_digit in [2, 3, 4] and last_two_digits not in [12, 13, 14]:
         message = f"🎄 Осталось {days} {word} до Нового года! 🎅"
     else:
         message = f"🎄 Осталось {days} {word} до Нового года! 🎅"
@@ -154,7 +156,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if is_new:
         message = (
             f"✅ Отлично! Теперь я буду отправлять сюда каждый день количество дней до Нового года.\n\n"
-            f"Сейчас до Нового года осталось: {days} {word_after_number(days)} 🎄\n\n"
+            f"Сейчас до Нового года: {days} {word_after_number(days)} 🎄\n\n"
             f"Команды:\n"
             f"/check - узнать количество дней прямо сейчас\n"
             f"/stop - отписаться от уведомлений\n"
@@ -163,7 +165,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         message = (
             f"Вы уже подписаны на уведомления! ✅\n\n"
-            f"До Нового года осталось: {days} {word_after_number(days)} 🎄\n\n"
+            f"До Нового года: {days} {word_after_number(days)} 🎄\n\n"
             f"Команды:\n"
             f"/check - узнать количество дней прямо сейчас\n"
             f"/stop - отписаться от уведомлений"
