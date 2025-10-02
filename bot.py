@@ -84,18 +84,37 @@ def days_until_new_year():
     return days_left
 
 
-async def send_daily_message(context: ContextTypes.DEFAULT_TYPE):
-    """Отправляет ежедневное сообщение с количеством дней до НГ во все чаты"""
-    days = days_until_new_year()
+def word_after_number(days: int) -> str:
+    """Формирует сообщение для отправки"""
+    last_digit = days % 10
+    last_two_digits = days % 100
 
+    if last_digit == 1 and last_two_digits != 11:
+        return 'день'
+    elif last_digit in [2, 3, 4] and last_two_digits not in [12, 13, 14]:
+        return 'дня'
+    else:
+        return 'дней'
+
+
+def countdown_message():
+    """Создает сообщение для отправки"""
+    days = days_until_new_year()
+    word = word_after_number(days)
     if days == 0:
         message = "🎉 С Новым Годом! 🎊"
     elif days == 1:
-        message = f"🎄 Остался всего {days} день до Нового года! 🎅"
+        message = f"🎄 Остался всего {days} {word} до Нового года! 🎅"
     elif days <= 4:
-        message = f"🎄 Осталось {days} дня до Нового года! 🎅"
+        message = f"🎄 Осталось {days} {word} до Нового года! 🎅"
     else:
-        message = f"🎄 Осталось {days} дней до Нового года! 🎅"
+        message = f"🎄 Осталось {days} {word} до Нового года! 🎅"
+    return message
+
+
+async def send_daily_message(context: ContextTypes.DEFAULT_TYPE):
+    """Отправляет ежедневное сообщение с количеством дней до НГ во все чаты"""
+    message = countdown_message()
 
     chats = load_chats()
     success_count = 0
@@ -135,7 +154,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if is_new:
         message = (
             f"✅ Отлично! Теперь я буду отправлять сюда каждый день количество дней до Нового года.\n\n"
-            f"Сейчас до Нового года осталось: {days} дней 🎄\n\n"
+            f"Сейчас до Нового года осталось: {days} {word_after_number(days)} 🎄\n\n"
             f"Команды:\n"
             f"/check - узнать количество дней прямо сейчас\n"
             f"/stop - отписаться от уведомлений\n"
@@ -144,7 +163,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         message = (
             f"Вы уже подписаны на уведомления! ✅\n\n"
-            f"До Нового года осталось: {days} дней 🎄\n\n"
+            f"До Нового года осталось: {days} {word_after_number(days)} 🎄\n\n"
             f"Команды:\n"
             f"/check - узнать количество дней прямо сейчас\n"
             f"/stop - отписаться от уведомлений"
@@ -174,16 +193,7 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def check_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик команды /check - показывает актуальное количество дней"""
-    days = days_until_new_year()
-
-    if days == 0:
-        message = "🎉 С Новым Годом! 🎊"
-    elif int(str(days)[-1]) == 1:
-        message = f"До Нового года остался {days} день! 🎄"
-    elif int(str(days)[-1]) <= 4:
-        message = f"До Нового года осталось {days} дня! 🎄"
-    else:
-        message = f"До Нового года осталось {days} дней! 🎄"
+    message = countdown_message()
 
     await update.message.reply_text(message)
 
@@ -243,7 +253,7 @@ def main():
     )
 
     print("✓ Бот запущен!")
-    print("✓ Ежедневные сообщения будут отправляться в 9:00")
+    # print("✓ Ежедневные сообщения будут отправляться в 9:00")
     print("✓ Чтобы получать уведомления, отправьте боту /start")
     print("")
 
