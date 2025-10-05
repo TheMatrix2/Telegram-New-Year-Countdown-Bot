@@ -1,7 +1,7 @@
 from datetime import datetime, time
 from telegram.ext import ContextTypes
 
-from utils.chats import load_chats, remove_chat
+from utils.chats import load_chats, remove_chat, generate_random_time, save_chats
 from utils.setup import TIMEZONE
 
 
@@ -52,40 +52,23 @@ async def send_daily_message(context: ContextTypes.DEFAULT_TYPE):
     message = countdown_message()
 
     chats = load_chats()
-    current_time = datetime.now(TIMEZONE).time()
+    current_time = datetime.now(TIMEZONE)
+    current_time_str = current_time.strftime("%H:%M")
+    today_date = current_time.date().isoformat()
     success_count = 0
     failed_chats = []
+    updated = False
 
     for chat in chats:
-        # Проверяем, нужно ли отправлять сообщение в этот чат сейчас
-        time_start = chat.get('time_start', '09:00')
-        time_end = chat.get('time_end', '09:00')
+        # Проверяем, не отправляли ли уже сегодня
+        if chat.get('last_sent_date') == today_date:
+            continue
 
-        # Парсим время
-        start_hour, start_min = map(int, time_start.split(':'))
-        end_hour, end_min = map(int, time_end.split(':'))
+        # Получаем время отправки для этого чата
+        send_time = chat.get('random_time', '09:00')
 
-        start_time = time(hour=start_hour, minute=start_min)
-        end_time = time(hour=end_hour, minute=end_min)
-
-        # Проверяем, попадает ли текущее время в диапазон
-        should_send = False
-        if start_time == end_time:
-            # Точное время (с допуском 1 минута)
-            if abs((current_time.hour * 60 + current_time.minute) - (start_hour * 60 + start_min)) <= 1:
-                should_send = True
-        else:
-            # Диапазон времени
-            if start_time <= end_time:
-                # Обычный диапазон
-                if start_time <= current_time <= end_time:
-                    should_send = True
-            else:
-                # Диапазон через полночь
-                if current_time >= start_time or current_time <= end_time:
-                    should_send = True
-
-        if not should_send:
+        # Проверяем, совпадает ли текущее время с временем отправки (с точностью до минуты)
+        if send_time != current_time_str:
             continue
 
         try:
@@ -102,15 +85,31 @@ async def send_daily_message(context: ContextTypes.DEFAULT_TYPE):
             await context.bot.send_message(**send_params)
             success_count += 1
 
+            # Обновляем дату последней отправки
+            chat['last_sent_date'] = today_date
+
+            # Генерируем новое случайное время на завтра
+            time_start = chat.get('time_start', '09:00')
+            time_end = chat.get('time_end', '09:00')
+            chat['random_time'] = generate_random_time(time_start, time_end)
+
+            updated = True
+
             thread_info = f" (тема: {chat['thread_id']})" if chat.get('thread_id') else ""
-            print(f"[{datetime.now(TIMEZONE)}] Сообщение отправлено в {chat['title']}{thread_info} ({chat['id']})")
+            next_time_info = f", следующая отправка в {chat['random_time']}" if time_start != time_end else ""
+            print(
+                f"[{current_time}] Сообщение отправлено в {chat['title']}{thread_info} ({chat['id']}){next_time_info}")
         except Exception as e:
-            print(f"[{datetime.now(TIMEZONE)}] Ошибка отправки в {chat['title']} ({chat['id']}): {e}")
+            print(f"[{current_time}] Ошибка отправки в {chat['title']} ({chat['id']}): {e}")
             failed_chats.append((chat['id'], chat.get('thread_id')))
+
+    # Сохраняем изменения если были отправки
+    if updated:
+        save_chats(chats)
 
     # Удаляем чаты, куда не удалось отправить
     for chat_id, thread_id in failed_chats:
         remove_chat(chat_id, thread_id)
 
     if success_count > 0:
-        print(f"[{datetime.now(TIMEZONE)}] Отправлено в {success_count} чатов")
+        print(f"[{current_time}] Отправлено в {success_count} чатов")

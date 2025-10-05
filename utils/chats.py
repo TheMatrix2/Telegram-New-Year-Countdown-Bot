@@ -30,6 +30,8 @@ def add_chat(chat_id, chat_type, chat_title, message_thread_id=None, time_start=
             # Обновляем время если чат уже есть
             chat['time_start'] = time_start
             chat['time_end'] = time_end
+            chat['random_time'] = generate_random_time(time_start, time_end)
+            chat['last_sent_date'] = None  # Сбрасываем дату последней отправки
             save_chats(chats)
             return False
 
@@ -40,6 +42,8 @@ def add_chat(chat_id, chat_type, chat_title, message_thread_id=None, time_start=
         'title': chat_title,
         'time_start': time_start,
         'time_end': time_end,
+        'random_time': generate_random_time(time_start, time_end),
+        'last_sent_date': None,
         'added_at': datetime.now(TIMEZONE).isoformat()
     }
 
@@ -70,19 +74,22 @@ def update_chat_time(chat_id, message_thread_id, time_start, time_end):
         if chat['id'] == chat_id and chat.get('thread_id') == message_thread_id:
             chat['time_start'] = time_start
             chat['time_end'] = time_end
+            chat['random_time'] = generate_random_time(time_start, time_end)
+            chat['last_sent_date'] = None
             save_chats(chats)
             return True
+
     return False
 
 
-def get_random_time_in_range(time_start_str, time_end_str):
-    """Возвращает случайное время в диапазоне"""
+def generate_random_time(time_start_str, time_end_str):
+    """Генерирует случайное время в диапазоне в формате строки ЧЧ:ММ"""
     start_hour, start_min = map(int, time_start_str.split(':'))
     end_hour, end_min = map(int, time_end_str.split(':'))
 
     # Если время одинаковое, возвращаем его
     if time_start_str == time_end_str:
-        return time(hour=start_hour, minute=start_min, tzinfo=TIMEZONE)
+        return time_start_str
 
     # Преобразуем в минуты от начала дня
     start_minutes = start_hour * 60 + start_min
@@ -99,4 +106,4 @@ def get_random_time_in_range(time_start_str, time_end_str):
     random_hour = random_minutes // 60
     random_min = random_minutes % 60
 
-    return time(hour=random_hour, minute=random_min, tzinfo=TIMEZONE)
+    return f"{random_hour:02d}:{random_min:02d}"

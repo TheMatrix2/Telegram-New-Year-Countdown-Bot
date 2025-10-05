@@ -109,6 +109,11 @@ async def get_chat_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def set_time_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Начало настройки времени"""
+    # Если есть аргументы, обрабатываем как пользовательское время
+    if context.args:
+        await set_time_custom(update, context)
+        return
+
     keyboard = [
         [
             InlineKeyboardButton("Утро (08:00-10:00)", callback_data="time_preset_08:00-10:00"),
@@ -181,13 +186,7 @@ async def time_button_callback(update: Update, context: ContextTypes.DEFAULT_TYP
 async def set_time_custom(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Установка пользовательского времени"""
     if not context.args:
-        await update.message.reply_text(
-            "❌ Укажите время!\n\n"
-            "Примеры:\n"
-            "`/settime 09:30`\n"
-            "`/settime 08:00-10:00`",
-            parse_mode='Markdown'
-        )
+        await set_time_start(update, context)
         return
 
     time_input = context.args[0]
