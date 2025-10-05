@@ -1,11 +1,11 @@
 import random
 from datetime import time
 from telegram import Update
-from telegram.ext import Application, CommandHandler
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
-from utils.chats import load_chats, days_until_new_year
-from utils.commands import start, stop, check_now, get_chat_id
-from utils.messages import send_daily_message
+from utils.chats import load_chats
+from utils.commands import start, stop, check_now, get_chat_id, set_time_custom, time_button_callback
+from utils.messages import send_daily_message, days_until_new_year
 from utils.setup import BOT_TOKEN, TIMEZONE_STR, USE_ENV, TIMEZONE
 
 
@@ -36,19 +36,22 @@ def main():
     application.add_handler(CommandHandler("stop", stop))
     application.add_handler(CommandHandler("check", check_now))
     application.add_handler(CommandHandler("chatid", get_chat_id))
+    application.add_handler(CommandHandler("settime", set_time_custom))
+    application.add_handler(CallbackQueryHandler(time_button_callback))
 
     # Получаем job_queue для планирования задач
     job_queue = application.job_queue
 
-    # Планируем ежедневную отправку в 9:00 по указанному часовому поясу
-    job_queue.run_daily(
+    # Запускаем проверку каждую минуту вместо ежедневно
+    job_queue.run_repeating(
         send_daily_message,
-        time=time(hour=12, minute=random.randint(0, 59), tzinfo=TIMEZONE),
-        name="daily_countdown"
+        interval=60,  # каждую минуту
+        first=10,  # первый запуск через 10 секунд
+        name="countdown_checker"
     )
 
     print("✓ Бот запущен!")
-    # print("✓ Ежедневные сообщения будут отправляться в 9:00")
+    print("✓ Сообщения будут отправляться в настроенное время")
     print("✓ Чтобы получать уведомления, отправьте боту /start")
     print("")
 
