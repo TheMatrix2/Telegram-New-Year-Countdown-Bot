@@ -5,6 +5,7 @@ git restore setup.sh update.sh
 git pull
 
 sudo cp bot.py /opt/telegram-bot/
+sudo cp -r utils /opt/telegram-bot/
 
 sudo systemctl start telegram-bot
 
