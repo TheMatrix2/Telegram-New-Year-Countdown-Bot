@@ -38,7 +38,8 @@ echo ""
 
 echo -e "${YELLOW}[2/8] Копирование файлов бота...${NC}"
 if [ -f "$SCRIPT_DIR/bot.py" ]; then
-    cp "$SCRIPT_DIR/bot.py" "$BOT_DIR/bot.py"
+    cp -r "$SCRIPT_DIR/source" "$BOT_DIR/"
+    cp "$SCRIPT_DIR/bot.py" "$BOT_DIR/"
     echo -e "${GREEN}✓ Файл bot.py скопирован${NC}"
 else
     echo -e "${RED}Ошибка: Файл bot.py не найден в текущей директории${NC}"
