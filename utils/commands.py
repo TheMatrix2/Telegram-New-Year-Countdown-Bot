@@ -63,7 +63,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(message)
 
 
-async def stop(update: Update):
+async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик команды /stop - отписывает чат от уведомлений"""
     chat_id = update.effective_chat.id
     chat_title = update.effective_chat.title if hasattr(update.effective_chat,
@@ -82,14 +82,14 @@ async def stop(update: Update):
     )
 
 
-async def check_now(update: Update):
+async def check_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик команды /check - показывает актуальное количество дней"""
     message = countdown_message()
 
     await update.message.reply_text(message)
 
 
-async def get_chat_id(update: Update):
+async def get_chat_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик команды /chatid - показывает ID чата и темы"""
     chat_id = update.effective_chat.id
     chat_type = update.effective_chat.type
