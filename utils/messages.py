@@ -45,15 +45,25 @@ async def send_daily_message(context: ContextTypes.DEFAULT_TYPE):
 
     for chat in chats:
         try:
-            await context.bot.send_message(chat_id=chat['id'], text=message)
+            send_params = {
+                'chat_id': chat['id'],
+                'text': message,
+            }
+
+            if chat.get('thread_id'):
+                send_params['message_thread_id'] = chat['thread_id']
+
+            await context.bot.send_message(**send_params)
             success_count += 1
-            print(f"[{datetime.now(TIMEZONE)}] Сообщение отправлено в {chat['title']} ({chat['id']})")
+
+            thread_info = f" (тема: {chat['thread_id']})" if chat.get('thread_id') else ""
+            print(f"[{datetime.now(TIMEZONE)}] Сообщение отправлено в {chat['title']}{thread_info} ({chat['id']})")
         except Exception as e:
             print(f"[{datetime.now(TIMEZONE)}] Ошибка отправки в {chat['title']} ({chat['id']}): {e}")
-            failed_chats.append(chat['id'])
+            failed_chats.append((chat['id'], chat.get('thread_id')))
 
     # Удаляем чаты, куда не удалось отправить (возможно бот был удален)
-    for chat_id in failed_chats:
-        remove_chat(chat_id)
+    for chat_id, thread_id in failed_chats:
+        remove_chat(chat_id, thread_id)
 
     print(f"[{datetime.now(TIMEZONE)}] Отправлено в {success_count}/{len(chats)} чатов")
