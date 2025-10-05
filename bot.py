@@ -1,12 +1,10 @@
-import random
-from datetime import time
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
 from utils.chats import load_chats
-from utils.commands import start, stop, check_now, get_chat_id, set_time_custom, time_button_callback, set_time_start
+from utils.commands import start, stop, check_now, get_chat_id, time_button_callback, set_time_start
 from utils.messages import send_daily_message, days_until_new_year
-from utils.setup import BOT_TOKEN, TIMEZONE_STR, USE_ENV, TIMEZONE
+from utils.setup import BOT_TOKEN, TIMEZONE_STR, USE_ENV
 
 
 def main():
