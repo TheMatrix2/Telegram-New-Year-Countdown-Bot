@@ -38,7 +38,7 @@ echo ""
 
 echo -e "${YELLOW}[2/8] Копирование файлов бота...${NC}"
 if [ -f "$SCRIPT_DIR/bot.py" ]; then
-    cp -r "$SCRIPT_DIR/source" "$BOT_DIR/"
+    cp -r "$SCRIPT_DIR/utils" "$BOT_DIR/"
     cp "$SCRIPT_DIR/bot.py" "$BOT_DIR/"
     echo -e "${GREEN}✓ Файл bot.py скопирован${NC}"
 else
