@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
-from utils.chats import load_chats
+from utils.chats import load_chats, migrate_chats
 from utils.commands import start, stop, check_now, get_chat_id, time_button_callback, set_time_start
 from utils.messages import send_daily_message, days_until_new_year
 from utils.setup import BOT_TOKEN, TIMEZONE_STR, USE_ENV
@@ -14,6 +14,8 @@ def main():
         print("ОШИБКА: Необходимо настроить BOT_TOKEN!")
         print("Отредактируйте bot.py или создайте файл .env")
         exit(1)
+
+    migrate_chats()
 
     chats = load_chats()
 

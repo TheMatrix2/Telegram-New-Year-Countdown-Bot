@@ -107,3 +107,46 @@ def generate_random_time(time_start_str, time_end_str):
     random_min = random_minutes % 60
 
     return f"{random_hour:02d}:{random_min:02d}"
+
+
+def migrate_chats():
+    """Мигрирует старые данные чатов к новому формату"""
+    try:
+        chats = load_chats()
+        updated = False
+
+        for chat in chats:
+            # Добавляем отсутствующие поля
+            if 'time_start' not in chat:
+                chat['time_start'] = '09:00'
+                updated = True
+
+            if 'time_end' not in chat:
+                chat['time_end'] = '09:00'
+                updated = True
+
+            if 'random_time' not in chat:
+                chat['random_time'] = generate_random_time(
+                    chat.get('time_start', '09:00'),
+                    chat.get('time_end', '09:00')
+                )
+                updated = True
+
+            if 'last_sent_date' not in chat:
+                chat['last_sent_date'] = None
+                updated = True
+
+            # Исправляем title для личных чатов
+            if chat.get('title') is None and chat['type'] == 'private':
+                chat['title'] = f"Личный чат (ID: {chat['id']})"
+                updated = True
+
+        if updated:
+            save_chats(chats)
+            print(f"✓ Миграция данных завершена: обновлено {len(chats)} чатов")
+            return True
+
+        return False
+    except Exception as e:
+        print(f"Ошибка миграции данных: {e}")
+        return False

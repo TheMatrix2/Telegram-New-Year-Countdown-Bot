@@ -67,6 +67,13 @@ async def send_daily_message(context: ContextTypes.DEFAULT_TYPE):
         # Получаем время отправки для этого чата
         send_time = chat.get('random_time', '09:00')
 
+        if not send_time:
+            time_start = chat.get('time_start', '09:00')
+            time_end = chat.get('time_end', '09:00')
+            send_time = generate_random_time(time_start, time_end)
+            chat['random_time'] = send_time
+            updated = True
+
         # Проверяем, совпадает ли текущее время с временем отправки (с точностью до минуты)
         if send_time != current_time_str:
             continue
