@@ -1,8 +1,8 @@
 from datetime import datetime
 from telegram.ext import ContextTypes
 
-from chats import days_until_new_year, load_chats, remove_chat
-from setup import TIMEZONE
+from utils.chats import days_until_new_year, load_chats, remove_chat
+from utils.setup import TIMEZONE
 
 
 def word_after_number(days: int) -> str:

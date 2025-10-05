@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 
-from setup import TIMEZONE, CHATS_FILE
+from utils.setup import TIMEZONE, CHATS_FILE
 
 
 def load_chats():
