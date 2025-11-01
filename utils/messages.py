@@ -99,8 +99,9 @@ def countdown_message_schedule():
     funny_additions = open('utils/additions.txt').readlines()
 
     template = random.choice(MESSAGE_TEMPLATES)
+    funny_additions = [line for line in funny_additions if line.strip()]
     template = f'{random.choice(EMOJIS)} {template.format(days=days, word=word)} {random.choice(EMOJIS)}'
-    addition = f'{random.choice(EMOJIS)} {random.choice(funny_additions).replace("\n", "")} {random.choice(EMOJIS)}'
+    addition = f'{random.choice(EMOJIS)} {random.choice(funny_additions)} {random.choice(EMOJIS)}'
     message = template + '\n' + addition
 
     return message
