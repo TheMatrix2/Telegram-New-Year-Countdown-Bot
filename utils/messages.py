@@ -100,7 +100,7 @@ def countdown_message_schedule():
 
     template = random.choice(MESSAGE_TEMPLATES)
     template = f'{random.choice(EMOJIS)} {template.format(days=days, word=word)} {random.choice(EMOJIS)}'
-    addition = f'{random.choice(EMOJIS)} {random.choice(funny_additions).replace('\n', '')} {random.choice(EMOJIS)}'
+    addition = f'{random.choice(EMOJIS)} {random.choice(funny_additions).replace("\n", "")} {random.choice(EMOJIS)}'
     message = template + '\n' + addition
 
     return message
