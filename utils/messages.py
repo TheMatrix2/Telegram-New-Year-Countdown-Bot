@@ -96,7 +96,7 @@ def countdown_message_schedule():
 
     word = word_after_number(days)
 
-    funny_additions = open('utils/additions.txt').readlines()
+    funny_additions = open('utils/additions.txt').readlines().split("\n")
 
     template = random.choice(MESSAGE_TEMPLATES)
     funny_additions = [line for line in funny_additions if line.strip()]
